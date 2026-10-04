@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Competitive map · High-performance CDN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper-000:#FFFFFF;--paper-050:#FAFAFA;--paper-100:#E7E5E1;
+    --ink-900:#212121;--ink-600:#5B5B5B;--ink-300:#9B9B9B;
+    --blue-500:#37A1FF;--blue-050:#EAF4FF;--blue-700:#1F6FBF;
+    --orange-500:#FF9537;--orange-050:#FFF2E5;--orange-700:#A85700;
+
+    --bg:var(--paper-050);--bg-soft:var(--paper-050);--panel:var(--paper-000);--panel-2:var(--paper-000);
+    --line:var(--paper-100);--line-soft:var(--paper-100);
+    --ink:var(--ink-900);--ink-soft:var(--ink-600);--ink-faint:var(--ink-300);
+    --accent:var(--blue-500);--accent-2:var(--orange-500);
+    --radius:16px;--radius-sm:8px;
+    --shadow-card:0 20px 40px -24px rgba(33,33,33,.25);
+    --display:"Playfair Display",Georgia,serif;
+    --ui:"Be Vietnam Pro",-apple-system,system-ui,sans-serif;
+    --read:"Lato","Be Vietnam Pro",system-ui,sans-serif;
+    --sans:var(--ui);--mono:var(--ui);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none !important;animation:none !important}}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{color:var(--accent-2)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  header.top{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;
+    background:rgba(250,250,250,.82);backdrop-filter:blur(10px)}
+  .topbar{display:flex;align-items:center;gap:14px;padding:14px 0}
+  .logo{display:flex;align-items:center;gap:11px;cursor:pointer;border:0;background:none;color:var(--ink);font:inherit;padding:0}
+  .logo .dot{font-family:var(--ui);font-weight:700;color:var(--accent);font-size:22px;line-height:1}
+  .logo .dot::before{content:"&"}
+  .logo b{font-family:var(--display);font-weight:600;letter-spacing:.2px;font-size:16px}
+  .logo span{color:var(--ink-faint);font-size:11px;display:block;font-weight:500;letter-spacing:.3px;font-family:var(--ui)}
+  .top-meta{margin-left:auto;font-family:var(--ui);font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+
+  .hero{position:relative;overflow:hidden;padding:56px 0 30px}
+  .hero>*{position:relative;z-index:1}
+  .amp{position:absolute;z-index:0;top:-30px;right:-6px;font-family:var(--ui);font-weight:700;
+    font-size:clamp(200px,32vw,340px);line-height:.8;color:var(--ink-900);opacity:.06;pointer-events:none;user-select:none}
+  .kicker{font-family:var(--ui);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-family:var(--display);font-size:clamp(30px,5vw,50px);line-height:1.08;margin:14px 0 10px;letter-spacing:-.5px;font-weight:600}
+  .hero p{max-width:680px;color:var(--ink-soft);font-size:18px;margin:0;font-family:var(--read)}
+  .neutral-badge{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:8px 14px;border:1px solid var(--line);
+    border-radius:999px;font-size:13px;color:var(--ink-soft);background:var(--panel);font-family:var(--ui);font-weight:500}
+  .neutral-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--blue-050)}
+
+  .group{margin:34px 0}
+  .group-head{display:flex;align-items:baseline;gap:12px;margin:0 0 16px}
+  .group-head h2{font-family:var(--ui);font-size:12px;text-transform:uppercase;letter-spacing:1.6px;color:var(--ink-faint);margin:0;font-weight:700}
+  .group-head .rule{flex:1;height:1px;background:var(--line)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .card{position:relative;text-align:left;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 20px;cursor:pointer;
+    color:var(--ink);font:inherit;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--dot,var(--accent))}
+  .card:hover,.card:focus-visible{transform:translateY(-4px);border-color:var(--line);box-shadow:var(--shadow-card);outline:none}
+  .card:focus-visible{box-shadow:0 0 0 2px var(--dot,var(--accent))}
+  .card .code{font-family:var(--ui);font-size:11px;letter-spacing:1px;color:var(--ink-faint);font-weight:600}
+  .card .tag{font-family:var(--ui);font-size:10px;letter-spacing:.6px;text-transform:uppercase;font-weight:600;
+    padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--dot,var(--accent)) 12%,transparent);
+    color:var(--dot,var(--accent));border:1px solid color-mix(in srgb,var(--dot,var(--accent)) 30%,transparent)}
+  .card .row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .card h3{margin:0 0 6px;font-size:19px;font-weight:600;display:flex;align-items:center;gap:9px;font-family:var(--display)}
+  .card h3 .swatch{width:11px;height:11px;border-radius:50%;background:var(--dot);flex:none}
+  .card .desc{color:var(--ink-soft);font-size:14px;margin:0;font-family:var(--read)}
+
+  .block{display:none}
+  .block.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .crumb{display:flex;align-items:center;gap:10px;padding:26px 0 6px;font-family:var(--ui);font-size:12px;color:var(--ink-faint);font-weight:600}
+  .crumb button{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:0;font-weight:600}
+  .crumb button:hover{color:var(--accent-2);text-decoration:underline}
+  .block-head{display:flex;align-items:center;gap:14px;margin:6px 0 4px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+  .block-head .swatch{width:16px;height:16px;border-radius:50%;background:var(--dot,var(--accent));flex:none;
+    box-shadow:0 0 0 5px color-mix(in srgb,var(--dot,var(--accent)) 16%,transparent)}
+  .block-head h2{font-family:var(--display);font-size:clamp(24px,4vw,34px);margin:0;letter-spacing:-.3px;font-weight:600}
+  .block-head .bcode{margin-left:auto;font-family:var(--ui);font-size:12px;color:var(--ink-faint);letter-spacing:1px;font-weight:600}
+  .block-body{padding:20px 0 10px;max-width:820px}
+  .block-body p{color:var(--ink-soft);margin:0 0 14px;font-family:var(--read)}
+  .block-body p.lead{font-size:18px;color:var(--ink)}
+  .block-body h4{margin:26px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);font-weight:700;font-family:var(--ui)}
+  .fld{display:grid;grid-template-columns:160px 1fr;gap:6px 18px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .fld dt{font-weight:600;color:var(--ink);font-family:var(--ui)}
+  .fld dd{margin:0;color:var(--ink-soft);font-family:var(--read)}
+  @media(max-width:560px){.fld{grid-template-columns:1fr;gap:2px}}
+  .flag{display:inline-block;font-family:var(--ui);font-size:11px;letter-spacing:.3px;color:var(--dot,var(--accent));font-weight:600;
+    border:1px solid color-mix(in srgb,var(--dot,var(--accent)) 36%,transparent);padding:2px 9px;border-radius:999px;
+    background:color-mix(in srgb,var(--dot,var(--accent)) 12%,transparent);margin-left:4px}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);margin:8px 0 6px;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;min-width:900px;font-size:13px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-family:var(--read)}
+  thead th{background:var(--paper-050);position:sticky;top:0;font-size:12px;white-space:nowrap;border-bottom:1px solid var(--paper-100);font-family:var(--ui);font-weight:700;color:var(--ink)}
+  thead th .swatch{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  tbody th{background:#fff;font-weight:600;color:var(--ink);white-space:nowrap;font-size:12px;font-family:var(--ui)}
+  tbody tr:hover td,tbody tr:hover th{background:var(--blue-050)}
+  .te-col{background:rgba(55,161,255,.06)}
+  .scroll-hint{font-family:var(--ui);font-size:11px;color:var(--ink-faint);margin:0 0 16px;font-weight:600}
+  .note{font-size:13px;color:var(--ink-faint);font-style:italic;font-family:var(--read)}
+
+  .pager{display:flex;gap:12px;margin:30px 0 10px;flex-wrap:wrap}
+  .pager button{flex:1;min-width:200px;text-align:left;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);padding:14px 16px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+  .pager button:hover,.pager button:focus-visible{border-color:var(--line);box-shadow:var(--shadow-card);transform:translateY(-2px);outline:none}
+  .pager button:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+  .pager .dir{font-family:var(--ui);font-size:11px;color:var(--accent);letter-spacing:.6px;font-weight:600}
+  .pager .ttl{display:block;margin-top:3px;font-weight:600;font-family:var(--display)}
+  .pager button:disabled{opacity:.3;cursor:default}
+  .pager button:disabled:hover{box-shadow:none;transform:none}
+  .pager .next{text-align:right}
+
+  footer{border-top:1px solid var(--line);margin-top:50px;padding:26px 0 60px;color:var(--ink-faint);font-size:13px;font-family:var(--read)}
+  .maint{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:var(--radius-sm);padding:14px 16px;margin:20px 0;font-size:13px;color:var(--ink-soft)}
+  ul.src{margin:8px 0 0;padding-left:18px}
+  ul.src li{margin:4px 0;color:var(--ink-soft);font-size:14px;font-family:var(--read)}
+  .made{display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:30px;padding-top:26px;
+    border-top:1px solid var(--line);text-decoration:none;color:inherit}
+  .made-by{font-family:var(--ui);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+  .made-logo{font-family:var(--display);font-weight:600;font-size:clamp(22px,6vw,27px);color:#00172D;letter-spacing:.2px;line-height:1}
+  .made-logo .amp-mark{font-family:var(--ui);font-weight:700;font-style:normal;color:var(--accent);padding:0 .04em}
+  .made-link{font-family:var(--ui);font-size:13px;font-weight:600;color:var(--accent);transition:color .2s ease}
+  .made:hover .made-link{color:var(--accent-2)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap topbar">
+    <button class="logo" onclick="go('home')" aria-label="Back to index">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="logo-txt"><b>Competitive map</b><span>High-performance CDN</span></span>
+    </button>
+    <div class="top-meta">July 2026 · sector</div>
+  </div>
+</header>
+
+<main class="wrap" id="main">
+
+  <!-- HOME -->
+  <section class="block active" id="home">
+    <div class="hero">
+      <div class="amp" aria-hidden="true">&amp;</div>
+      <div class="kicker">sector portrait · Spanish lens</div>
+      <h1>Who's who in<br>content delivery</h1>
+      <p>Seven players measured by the same yardstick. Fundamentals, not talking points. This map portrays the terrain; it defends no one and declares no winner.</p>
+      <div class="neutral-badge">Fully neutral: no favorite, no "who wins" column</div>
+    </div>
+
+    <div class="group">
+      <div class="group-head"><h2>Reading the sector</h2><div class="rule"></div></div>
+      <div class="cards" id="cards-context"></div>
+    </div>
+
+    <div class="group">
+      <div class="group-head"><h2>Fundamentals cards</h2><div class="rule"></div></div>
+      <div class="cards" id="cards-actors"></div>
+    </div>
+
+    <div class="group">
+      <div class="group-head"><h2>The bigger picture</h2><div class="rule"></div></div>
+      <div class="cards" id="cards-overview"></div>
+    </div>
+  </section>
+
+  <!-- dynamic block target -->
+  <section class="block" id="blockview">
+    <div class="crumb"><button onclick="go('home')">← index</button><span id="crumb-code"></span></div>
+    <div class="block-head">
+      <span class="swatch" id="bh-swatch"></span>
+      <h2 id="bh-title"></h2>
+      <span class="bcode" id="bh-code"></span>
+    </div>
+    <div class="block-body" id="bh-body"></div>
+    <div class="pager">
+      <button class="prev" id="prevBtn" onclick="pageMove(-1)"><span class="dir">← previous</span><span class="ttl" id="prevTtl"></span></button>
+      <button class="next" id="nextBtn" onclick="pageMove(1)"><span class="dir">next →</span><span class="ttl" id="nextTtl"></span></button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Produced in July 2026. Sector content, no client and no own brand. Data marked "to be validated" or "not published" where the source was not public or unambiguous.
+  <a class="made" href="https://lauradecastro.substack.com/p/how-to-build-a-competitive-intelligence" target="_blank" rel="noopener">
+    <span class="made-by">Made by</span>
+    <span class="made-logo">Purpose <span class="amp-mark">&amp;</span> Prompt</span>
+    <span class="made-link">lauradecastro.substack.com</span>
+  </a>
+</footer>
+
+<script>
+"use strict";
+
+const ACTORS = [
+  {id:"cloudflare", name:"Cloudflare", color:"#f38020", one:"All in one, easy to start, security by default.",
+   fields:[
+    ["What it is","A global web delivery and security platform with a very capable free plan as its front door."],
+    ["Founded, HQ, size","Founded in 2010, headquartered in San Francisco (US). Publicly listed (NYSE: NET). Around 3,600 employees and roughly 1.3 billion dollars in revenue in 2024. More than 330 data centers."],
+    ["Who it sells to","The whole spectrum, from the personal blog to the large enterprise. Best fit: SMBs and tech companies that want delivery and security in one dashboard."],
+    ["Products","CDN, WAF, DDoS protection, bot management, DNS, Zero Trust and edge compute with Workers."],
+    ["Positioning","All in one, easy to start. The default choice for those getting going."],
+    ["Pricing (public)","Free plan; Pro at 20 $/mo; Business rose to 250 $/mo for new sign-ups in Nov 2025; Enterprise on request (platform fees from several thousand $/mo are cited, to be validated)."],
+    ["Reviews","Praise the clean dashboard, how easy it is to start and the value on lower plans. Complaints: confusing pricing and laborious WAF and bot tuning. Some advanced features are Enterprise-only."]
+   ]},
+  {id:"akamai", name:"Akamai", color:"#2ea3f2", one:"Reliability and scale for critical workloads.",
+   fields:[
+    ["What it is","The sector's most veteran CDN, today a delivery, security and cloud platform aimed at the large enterprise."],
+    ["Founded, HQ, size","Founded in 1998, headquartered in Cambridge, Massachusetts (US). Listed (NASDAQ: AKAM). Hundreds of thousands of servers in more than 130 countries. In 2024 its security business topped 2 billion dollars and for the first time weighed more than delivery."],
+    ["Who it sells to","Large enterprises and demanding sectors (banking, media, high-volume retail, streaming). Not built for the small project."],
+    ["Products","CDN, WAF, anti DDoS, bot management, API security and its cloud platform (Connected Cloud)."],
+    ["Positioning","Reliability and scale. The provider you turn to when going down is not an option."],
+    ["Pricing (public)","Contract-based and custom, with no public list prices. A reputation for being expensive for small organizations."],
+    ["Reviews","A benchmark in WAF and DDoS mitigation, with very good availability and low latency. Usual criticism: cost for anyone who is not a large account, and a heavy configuration layer."]
+   ]},
+  {id:"fastly", name:"Fastly", color:"#ff3b30", one:"Control and speed for those who know what they're doing.",
+   fields:[
+    ["What it is","A CDN and edge platform aimed at developers, known for being highly programmable and very fast at cache purging."],
+    ["Founded, HQ, size","Founded in 2011, headquartered in San Francisco (US). Listed (NYSE: FSLY). Revenue around 550 million dollars a year (2024, to be validated). A network processing hundreds of Tbps."],
+    ["Who it sells to","Technical teams and companies with high customization needs. Media, e-commerce and platforms that want fine control over edge logic."],
+    ["Products","CDN, edge compute (Compute), WAF, DDoS protection, image optimization and streaming."],
+    ["Positioning","The developer's CDN: control and speed."],
+    ["Pricing (public)","Usage-based, minimum subscription from 50 $/mo. Bandwidth on the order of 0.08 to 0.12 $/GB in North America and Europe, higher in other regions (to be validated)."],
+    ["Reviews","Highlight fast delivery, near-instant purging and support. Recurring gripe: the learning curve in advanced customization and an interface that sometimes confuses."]
+   ]},
+  {id:"imperva", name:"Imperva", color:"#8b6cff", one:"Security first; the CDN comes included.",
+   fields:[
+    ["What it is","An application security provider whose CDN (inherited from Incapsula) comes integrated into its web and API protection platform."],
+    ["Founded, HQ, size","Imperva was founded in 2002, headquartered in San Mateo, California (US). Owned by the French group Thales since 2019. Incapsula, the origin of its CDN, was integrated after the acquisition."],
+    ["Who it sells to","Organizations that put security first and want the CDN as part of the protection package, not the other way around. Mid-size and large enterprise."],
+    ["Products","Cloud and on-premise WAF, API protection, anti DDoS, bot management and a CDN integrated into its WAAP."],
+    ["Positioning","Security first, with delivery as an included layer. The CDN is a means, not the star product."],
+    ["Pricing (public)","The part inherited from Incapsula showed plans from 59 $/mo (Pro) and 299 (Business) per site, with a limited free tier. Imperva's current offer tends toward custom quotes and usage-based pricing, with no public per-GB price (to be validated)."],
+    ["Reviews","Highly rated for its WAF rules, threat intelligence and the speed the CDN adds. Most common criticism: price for small businesses versus alternatives like Cloudflare."]
+   ]},
+  {id:"cloudfront", name:"AWS CloudFront", color:"#ff9900", one:"The delivery that already lives inside your AWS cloud.",
+   fields:[
+    ["What it is","Amazon Web Services' CDN, designed to integrate natively with the rest of the AWS ecosystem."],
+    ["Founded, HQ, size","Launched in 2008. Part of AWS (Amazon), headquartered in Seattle (US). It leans on Amazon's global scale."],
+    ["Who it sells to","Above all, whoever is already on AWS. For that customer, it is the path of least friction."],
+    ["Products","CDN integrated with AWS WAF and DDoS protection (Shield), DNS (Route 53), edge compute (Lambda@Edge) and S3 storage credits."],
+    ["Positioning","Its strength is integration, not independence."],
+    ["Pricing (public)","Historically usage-based. Since Nov 2025, flat-rate plans with no overage charges: Free (0 $), Pro (15), Business (200) and Premium (1,000) a month, with included traffic bands. When you exceed the limit it does not charge more: it serves from fewer locations. Traffic from AWS origins is not billed."],
+    ["Reviews","Very well rated for AWS integration and for scaling effortlessly in that ecosystem. Classic criticism: difficulty estimating costs, which the flat rate aims to solve."]
+   ]},
+  {id:"gcp", name:"Google Cloud CDN", color:"#34a853", one:"Delivery over Google's network, simple to manage.",
+   fields:[
+    ["What it is","Google Cloud's CDN, backed by Google's network and caches, integrated with its load balancing."],
+    ["Founded, HQ, size","Part of Google Cloud (Alphabet), headquartered in Mountain View (US). Caches at more than 70 locations."],
+    ["Who it sells to","Customers already on Google Cloud. Like CloudFront with AWS, its natural fit is its own ecosystem."],
+    ["Products","Cloud CDN for web, APIs and image-heavy content; Media CDN for video and large-scale downloads. HTTP/2 and QUIC."],
+    ["Positioning","Delivery over Google's network with a single global IP. Advanced security is handled with other pieces (Cloud Armor), not inside the CDN product itself."],
+    ["Pricing (public)","Usage-based. Charges for data served and for requests (on the order of 0.0075 $ per 10,000 lookups). 300 $ in credit for new customers during 90 days. Volume discounts above 500 TiB/mo."],
+    ["Reviews","Good pricing versus rivals and latencies comparable to CloudFront. Complaints: initial setup complicated for those who do not know the technology, and costs hard to estimate."]
+   ]},
+  {id:"transparentedge", name:"Transparent Edge", color:"#e91e63", one:"The only Spanish-owned CDN, with data sovereignty as its banner.", flag:"local player",
+   fields:[
+    ["What it is","The only Spanish-owned CDN, next generation, with European data sovereignty as its identity."],
+    ["Founded, HQ, size","The current company, Transparent Edge Services, was born in 2015 from the merger of three Spanish companies (a systems consultancy, the first Spanish CDN and a cybersecurity consultancy). Headquartered in Madrid. A small structure, on the order of 16 employees. More than 70 PoPs across some 40 countries, and the only platform with three PoPs in Spain."],
+    ["Who it sells to","Spanish and European organizations with data residency and sovereignty requirements. Among its clients it cites media groups, banks and public administrations."],
+    ["Products","Low-latency CDN, WAF, anti DDoS, image optimization, real-time logs and custom rule programming with VCL."],
+    ["Positioning","The performance of the big players with local proximity and European sovereignty. It takes part in the Spanish hub of Gaia-X. Compete on capability without taking data out of the European framework."],
+    ["Pricing (public)","Usage-based, no minimum commitments, billed per GB transferred (not per request). Per-GB rates not published."],
+    ["Reviews","Given its size and local focus, it does not accumulate a comparable volume of reviews on G2, Capterra or Trustpilot. The absence of mass reviews is itself a data point: direct sales and close relationships, not high-volume self-service. Spanish press describes it as the only national CDN that competes with the US giants."]
+   ]}
+];
+
+const CONTEXT = {
+  id:"intro", code:"00 · niche", title:"The niche, in two minutes", color:"#37A1FF",
+  body:`<p class="lead">A CDN serves a website's content from servers close to the user, instead of serving everything from the origin.</p>
+  <p>What the buyer wants is simple: pages that load fast anywhere and that hold up under traffic spikes without falling over. In practice, "fast" is measured in time to first byte, cache hit ratio and the ability to purge content instantly. That is the ground this category plays on.</p>
+  <h4>What moves the market</h4>
+  <p>Raw delivery has become almost a commodity: nearly all the big players deliver low latency, so competition has shifted toward edge programmability, integrated security (WAF, anti DDoS, bot management) and price. In November 2025 both AWS CloudFront and Cloudflare made a move with flat-rate plans and no overage charges, in a sector used to per-GB billing and bills that are hard to estimate.</p>
+  <h4>The Spanish axis</h4>
+  <p>From Spain there is an extra reading: data sovereignty. Six of the seven players are US-owned, which places data handling under frameworks such as the Cloud Act. The seventh, Transparent Edge, is the only Spanish-owned CDN and makes that its banner. For banking, the public sector and media with data residency requirements, it is a buying criterion.</p>`
+};
+
+const TABLE = { id:"tabla", code:"08 · matrix", title:"Bird's-eye comparison table", color:"#37A1FF" };
+
+const TERRAIN = {
+  id:"terreno", code:"09 · terrain", title:"Reading the terrain", color:"#37A1FF",
+  body:`<h4>Where it is saturated</h4>
+  <p>Basic content delivery is mature, contested ground. Almost everyone offers low latency and global coverage, so competing on speed alone gets you little. The contest has moved to other layers. Cloudflare, Akamai, Fastly, Imperva and CloudFront compete head-on in the delivery-plus-security package, each through a different door: Cloudflare through ease, Akamai through scale, Fastly through programmability, Imperva through security and CloudFront through AWS integration.</p>
+  <h4>Where they overlap</h4>
+  <p>The two hyperscaler CDNs (CloudFront and Google Cloud CDN) compete less with each other on price and more on gravity: each retains the customer already living in its cloud. The late-2025 development is the flat rate, which CloudFront and Cloudflare pushed almost at once. It is an attempt to solve the sector's most repeated complaint, bills that are impossible to estimate, and it pressures those still on per-GB pricing only.</p>
+  <h4>The gap</h4>
+  <p>The axis where the map opens up is data sovereignty. Six of the seven players are US-owned. For a Spanish or European organization with strict residency requirements (banking, public sector, healthcare, media), that point weighs as much as latency. There Transparent Edge holds a position the big players, by their own ownership, cannot replicate, even with a PoP in Madrid. The counterweight is size and catalog: a sixteen-person structure does not play in the same league of resources as Akamai or Amazon, and its advanced security and ecosystem offer is narrower. Two paths that do not quite cross: US-owned global scale, or European proximity and sovereignty at a smaller size.</p>
+  <h4>Where it is heading</h4>
+  <p>Pricing is simplifying, with the flat rate gaining ground over per-GB billing. Security is increasingly integrated into the delivery product itself, to the point where separating CDN and WAF starts to sound dated. Edge programmability (Workers, Compute, Lambda@Edge, VCL) is moving from extra to a decision criterion for technical teams. And sovereignty is not a passing fad: as long as European regulation keeps tightening data residency, it will remain a line of purchase.</p>`
+};
+
+const SOURCES = {
+  id:"fuentes", code:"10 · sources", title:"Sources and date", color:"#37A1FF",
+  body:`<p>Produced in July 2026 from the players' official websites, profiles and reviews on G2, TrustRadius, Capterra and PeerSpot, Crunchbase and company registries, sector press and product documentation. Data marked "to be validated" or "not published" where the source was not public or unambiguous. Sector content, no client and no own brand.</p>
+  <h4>Main references</h4>
+  <ul class="src">
+    <li>Transparent Edge: official website, merger note, Crunchbase profile, Axesor/Iberinform, Computing.</li>
+    <li>Cloudflare: G2, pricing blog, FY2024 financial reports.</li>
+    <li>Akamai: G2, TrustRadius, sector pricing notes, CIO Dive.</li>
+    <li>Fastly: G2, TrustRadius, AWS Marketplace, FY2024 reports.</li>
+    <li>Imperva / Incapsula: official website, PeerSpot, eSecurity Planet, CDN Handbook.</li>
+    <li>AWS CloudFront: AWS pricing page, AWS networking blog on flat-rate pricing.</li>
+    <li>Google Cloud CDN: Google Cloud pricing page, G2, Capterra.</li>
+  </ul>`
+};
+
+const MATRIX = [
+  ["Origin / ownership","US","US","US","US (Thales group, FR)","US","US","Spain"],
+  ["Product focus","Delivery + security all in one","Large-scale delivery and security","Programmable delivery for devs","Security first, CDN included","AWS-native CDN","Google Cloud-native CDN","Delivery + European sovereignty"],
+  ["Range","Entry to high","High","Mid to high","High","Entry to high","Mid to high","Mid to high"],
+  ["Typical customer","SMB and tech firms","Large enterprise","Technical teams","Security-first orgs","AWS customers","Google Cloud customers","Spanish and European orgs"],
+  ["Pricing model","Fixed plans + custom Enterprise","Custom contract","Usage-based (min. $50/mo)","Custom quote / PAYG","Flat rate or usage-based","Usage-based","Usage-based, no minimums"],
+  ["Public entry price","Yes (free / $20)","No","Yes (from $50)","Partial (legacy $59)","Yes (free / $15)","Yes (usage + credit)","No (to be validated)"],
+  ["Advanced security","Integrated","Integrated, benchmark","Integrated","Its core","Via AWS WAF / Shield","Via Cloud Armor (separate)","Integrated (WAF, DDoS)"],
+  ["Edge programmability","Workers","Yes","Compute (strong)","Limited","Lambda@Edge","Limited","VCL"],
+  ["PoP in Spain","Yes","Yes","Yes","Yes","Yes","Yes","Yes, three PoPs"],
+  ["EU data sovereignty","US-owned","US-owned","US-owned","US-owned (EU group)","US-owned","US-owned","Spanish-owned"],
+  ["Volume of public reviews","High","High","High","High","High","Medium-high","Low"]
+];
+
+const SEQ = [CONTEXT, ...ACTORS.map(a=>({...a, code:actorCode(a), title:a.name})), TABLE, TERRAIN, SOURCES];
+function actorCode(a){const i=ACTORS.indexOf(a)+1;return String(i).padStart(2,"0")+" · card";}
+
+function cardHTML(item, code, tag){
+  const flag = item.flag ? `<span class="tag" style="--dot:${item.color}">${item.flag}</span>` : `<span class="tag" style="--dot:${item.color}">${tag}</span>`;
+  return `<button class="card" style="--dot:${item.color}" onclick="go('${item.id}')" aria-label="Open ${item.title||item.name}">
+    <div class="row1"><span class="code">${code}</span>${flag}</div>
+    <h3><span class="swatch"></span>${item.title||item.name}</h3>
+    <p class="desc">${item.one||item.sub||""}</p>
+  </button>`;
+}
+document.getElementById("cards-context").innerHTML =
+  cardHTML({...CONTEXT, one:"What problem the category solves, what moves the market and why Spain reads differently."}, "00", "context");
+document.getElementById("cards-actors").innerHTML =
+  ACTORS.map((a,i)=>cardHTML(a, String(i+1).padStart(2,"0"), "card")).join("");
+document.getElementById("cards-overview").innerHTML =
+  cardHTML({...TABLE, one:"An eleven-dimension grid by player. It describes positions, it does not declare winners."},"08","matrix")
+  + cardHTML({...TERRAIN, one:"Where it is saturated, where they overlap, the sovereignty gap and where it is heading."},"09","analysis")
+  + cardHTML({...SOURCES, one:"Sources, date and what was flagged as not public or to be validated."},"10","sources");
+
+function tableHTML(){
+  const heads = ACTORS.map(a=>`<th><span class="swatch" style="background:${a.color}"></span>${a.name}</th>`).join("");
+  const rows = MATRIX.map(r=>{
+    const cells = r.slice(1).map((c,idx)=>{
+      const te = idx===6 ? ' class="te-col"' : '';
+      return `<td${te}>${c}</td>`;
+    }).join("");
+    return `<tr><th>${r[0]}</th>${cells}</tr>`;
+  }).join("");
+  return `<p class="scroll-hint">On small screens, swipe the table horizontally →</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Dimension</th>${heads}</tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>
+  <p class="note">This table describes positions, it does not declare winners. Each reader weighs the dimensions according to their own case.</p>`;
+}
+
+function renderBlock(item){
+  document.getElementById("bh-swatch").style.background = item.color;
+  const flagHTML = item.flag ? ` <span class="flag" style="--dot:${item.color}">${item.flag}</span>` : "";
+  document.getElementById("bh-title").innerHTML = (item.title||item.name)+flagHTML;
+  document.getElementById("bh-code").textContent = (item.code||"").toUpperCase();
+  document.getElementById("crumb-code").textContent = (item.code||"").toUpperCase();
+
+  let html = "";
+  if(item.fields){
+    html = `<p class="lead">${item.one}</p><dl style="margin:18px 0 0">`+
+      item.fields.map(f=>`<div class="fld"><dt>${f[0]}</dt><dd>${f[1]}</dd></div>`).join("")+`</dl>`;
+  } else if(item.id==="tabla"){
+    html = tableHTML();
+  } else {
+    html = item.body;
+  }
+  document.getElementById("bh-body").innerHTML = html;
+
+  const idx = SEQ.findIndex(x=>x.id===item.id);
+  const prev = SEQ[idx-1], next = SEQ[idx+1];
+  const pb = document.getElementById("prevBtn"), nb = document.getElementById("nextBtn");
+  if(prev){pb.disabled=false;pb.onclick=()=>go(prev.id);document.getElementById("prevTtl").textContent=prev.title||prev.name;}
+  else {pb.disabled=true;document.getElementById("prevTtl").textContent="";}
+  if(next){nb.disabled=false;nb.onclick=()=>go(next.id);document.getElementById("nextTtl").textContent=next.title||next.name;}
+  else {nb.disabled=true;document.getElementById("nextTtl").textContent="";}
+}
+
+function allById(id){
+  if(id==="intro"||id==="home") return CONTEXT;
+  if(id==="tabla") return TABLE;
+  if(id==="terreno") return TERRAIN;
+  if(id==="fuentes") return SOURCES;
+  const a = ACTORS.find(x=>x.id===id);
+  if(a){const i=ACTORS.indexOf(a)+1;return {...a, code:String(i).padStart(2,"0")+" · card", title:a.name};}
+  return null;
+}
+function go(id){
+  if(location.hash.slice(1)!==id) location.hash = id==="home" ? "" : id;
+  route();
+}
+function pageMove(dir){}
+
+function route(){
+  const id = location.hash.slice(1);
+  const home = document.getElementById("home");
+  const bv = document.getElementById("blockview");
+  if(!id || id==="home"){
+    home.classList.add("active"); bv.classList.remove("active");
+    window.scrollTo({top:0});
+    return;
+  }
+  const item = allById(id);
+  if(!item){ home.classList.add("active"); bv.classList.remove("active"); return; }
+  home.classList.remove("active"); bv.classList.add("active");
+  renderBlock(item);
+  window.scrollTo({top:0});
+}
+window.addEventListener("hashchange", route);
+route();
+
+document.addEventListener("keydown", e=>{
+  if(!document.getElementById("blockview").classList.contains("active")) return;
+  if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA") return;
+  if(e.key==="ArrowRight"){const b=document.getElementById("nextBtn");if(!b.disabled)b.onclick();}
+  if(e.key==="ArrowLeft"){const b=document.getElementById("prevBtn");if(!b.disabled)b.onclick();}
+  if(e.key==="Escape") go("home");
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Battle cards · Transparent Edge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Lato:ital,wght@0,300;0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper-000:#FFFFFF;--paper-050:#FAFAFA;--paper-100:#E7E5E1;
+    --ink-900:#212121;--ink-600:#5B5B5B;--ink-300:#9B9B9B;
+    --blue-500:#37A1FF;--blue-050:#EAF4FF;--blue-700:#1F6FBF;
+    --orange-500:#FF9537;--orange-050:#FFF2E5;--orange-700:#A85700;
+
+    --bg:var(--paper-050);--panel:var(--paper-000);--panel-2:var(--paper-000);--panel-3:var(--paper-050);
+    --line:var(--paper-100);--line-soft:var(--paper-100);
+    --ink:var(--ink-900);--ink-soft:var(--ink-600);--ink-faint:var(--ink-300);
+    --accent:var(--blue-500);--accent-2:var(--orange-500);
+    --te:var(--blue-500);--gold:var(--orange-500);
+    --radius:16px;--radius-sm:8px;
+    --shadow-card:0 20px 40px -24px rgba(33,33,33,.25);
+    --display:"Playfair Display",Georgia,serif;
+    --ui:"Be Vietnam Pro",-apple-system,system-ui,sans-serif;
+    --read:"Lato","Be Vietnam Pro",system-ui,sans-serif;
+    --sans:var(--ui);--mono:var(--ui);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 22px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{color:var(--accent-2)}
+
+  header.top{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line);
+    background:rgba(250,250,250,.82);backdrop-filter:blur(10px)}
+  .topbar{display:flex;align-items:center;gap:12px;padding:13px 0}
+  .brand{display:flex;align-items:center;gap:10px;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;padding:0}
+  .brand .dot{width:auto;height:auto;border-radius:0;background:none;box-shadow:none;
+    font-family:var(--ui);font-weight:700;color:var(--accent);font-size:22px;line-height:1}
+  .brand .dot::before{content:"&"}
+  .brand b{font-family:var(--display);font-weight:600;letter-spacing:.2px;font-size:16px}
+  .brand span{display:block;font-size:11px;color:var(--ink-faint);font-weight:500;font-family:var(--ui)}
+  .top-meta{margin-left:auto;font-family:var(--ui);font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+
+  .hero{position:relative;overflow:hidden;padding:52px 0 26px}
+  .hero>*{position:relative;z-index:1}
+  .amp{position:absolute;z-index:0;top:-30px;right:-6px;font-family:var(--ui);font-weight:700;
+    font-size:clamp(200px,32vw,340px);line-height:.8;color:var(--ink-900);opacity:.06;pointer-events:none;user-select:none}
+  .kicker{font-family:var(--ui);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-family:var(--display);font-size:clamp(30px,5vw,50px);line-height:1.08;margin:12px 0 10px;letter-spacing:-.5px;font-weight:600}
+  .hero p{max-width:680px;color:var(--ink-soft);font-size:17px;margin:0;font-family:var(--read)}
+  .warn{display:flex;gap:10px;margin-top:20px;padding:12px 15px;border:1px solid var(--line);border-left:3px solid var(--accent-2);
+    border-radius:var(--radius-sm);background:var(--panel);font-size:13px;color:var(--ink-soft)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 0 6px}
+  .legend span{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-soft)}
+  .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+  .group{margin:30px 0}
+  .group-head{display:flex;align-items:baseline;gap:12px;margin:0 0 14px}
+  .group-head h2{font-family:var(--ui);font-size:12px;text-transform:uppercase;letter-spacing:1.6px;color:var(--ink-faint);margin:0;font-weight:700}
+  .group-head .rule{flex:1;height:1px;background:var(--line)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  .card{position:relative;text-align:left;background:var(--panel);
+    border:1px solid var(--line);border-radius:var(--radius);padding:18px 16px;cursor:pointer;color:var(--ink);
+    font:inherit;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--dot,var(--accent))}
+  .card:hover,.card:focus-visible{transform:translateY(-4px);border-color:var(--line);box-shadow:var(--shadow-card);outline:none}
+  .card:focus-visible{box-shadow:0 0 0 2px var(--dot,var(--accent))}
+  .card .row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .card .code{font-family:var(--ui);font-size:11px;color:var(--ink-faint);letter-spacing:1px;font-weight:600}
+  .card .tag{font-family:var(--ui);font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;padding:3px 9px;border-radius:999px;font-weight:600;
+    background:color-mix(in srgb,var(--dot,var(--accent)) 12%,transparent);color:var(--dot,var(--accent));
+    border:1px solid color-mix(in srgb,var(--dot,var(--accent)) 30%,transparent)}
+  .card h3{margin:0 0 5px;font-size:18px;font-weight:600;font-family:var(--display)}
+  .card .desc{color:var(--ink-soft);font-size:13.5px;margin:0;font-family:var(--read)}
+
+  .block{display:none}
+  .block.active{display:block;animation:fade .22s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .crumb{display:flex;gap:10px;align-items:center;padding:24px 0 4px;font-family:var(--ui);font-size:12px;color:var(--ink-faint);font-weight:600}
+  .crumb button{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:0;font-weight:600}
+  .crumb button:hover{color:var(--accent-2);text-decoration:underline}
+  .bhead{display:flex;align-items:center;gap:13px;margin:6px 0 4px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .bhead .sw{width:14px;height:14px;border-radius:50%;background:var(--dot,var(--accent));flex:none;box-shadow:0 0 0 5px color-mix(in srgb,var(--dot,var(--accent)) 16%,transparent)}
+  .bhead h2{font-family:var(--display);font-size:clamp(23px,4vw,32px);margin:0;letter-spacing:-.3px;font-weight:600}
+  .bhead .bc{margin-left:auto;font-family:var(--ui);font-size:12px;color:var(--ink-faint);letter-spacing:1px;font-weight:600}
+  .body{padding:18px 0 8px;max-width:840px}
+  .body p{color:var(--ink-soft);margin:0 0 13px;font-family:var(--read)}
+  .body p.lead{font-size:17px;color:var(--ink)}
+  .body h4{margin:24px 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);font-weight:700;font-family:var(--ui)}
+  .body ul{margin:6px 0 14px;padding-left:20px}
+  .body li{color:var(--ink-soft);margin:5px 0;font-family:var(--read)}
+  .body strong{color:var(--ink)}
+  .rival{display:flex;align-items:center;gap:9px;margin:22px 0 8px;font-weight:600;font-size:19px;color:var(--ink);font-family:var(--display)}
+  .rival i{width:11px;height:11px;border-radius:50%;flex:none}
+  .kv{margin:6px 0}
+  .kv b{color:var(--ink)}
+  .quote{color:var(--accent);font-style:italic;font-family:var(--display)}
+  .fine{font-size:12.5px;color:var(--ink-faint);font-style:italic;font-family:var(--read)}
+  .pill{display:inline-block;font-family:var(--ui);font-size:10px;padding:1px 8px;border-radius:999px;margin-left:6px;font-weight:600;
+    border:1px solid color-mix(in srgb,var(--dot,var(--accent)) 36%,transparent);color:var(--dot,var(--accent));
+    background:color-mix(in srgb,var(--dot,var(--accent)) 12%,transparent);vertical-align:middle}
+
+  .tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);margin:8px 0 14px;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;font-family:var(--read)}
+  thead th{background:var(--paper-050);position:sticky;top:0;font-size:12px;white-space:nowrap;border-bottom:1px solid var(--paper-100);font-family:var(--ui);font-weight:700;color:var(--ink)}
+  tbody th{background:#fff;font-weight:600;color:var(--ink);font-size:12px;white-space:nowrap;font-family:var(--ui)}
+  tbody tr:hover td,tbody tr:hover th{background:var(--blue-050)}
+  .h2h{min-width:900px;font-size:12px}
+  .win{color:var(--orange-700);font-weight:700}
+  .te-row{color:var(--accent);font-weight:600}
+  .scrollhint{font-family:var(--ui);font-size:11px;color:var(--ink-faint);margin:0 0 8px;font-weight:600}
+
+  .pager{display:flex;gap:12px;margin:28px 0 10px;flex-wrap:wrap}
+  .pager button{flex:1;min-width:200px;text-align:left;background:var(--panel);border:1px solid var(--line);
+    border-radius:var(--radius);padding:14px 16px;color:var(--ink);font:inherit;cursor:pointer;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+  .pager button:hover,.pager button:focus-visible{border-color:var(--line);box-shadow:var(--shadow-card);transform:translateY(-2px);outline:none}
+  .pager button:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+  .pager button:disabled{opacity:.3;cursor:default}
+  .pager button:disabled:hover{box-shadow:none;transform:none}
+  .pager .dir{font-family:var(--ui);font-size:11px;color:var(--accent);letter-spacing:.6px;font-weight:600}
+  .pager .tt{display:block;margin-top:3px;font-weight:600;font-size:14px;font-family:var(--display)}
+  .pager .next{text-align:right}
+
+  footer{border-top:1px solid var(--line);margin-top:46px;padding:24px 0 60px;color:var(--ink-faint);font-size:13px;font-family:var(--read)}
+  .maint{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius-sm);
+    padding:13px 15px;margin:18px 0;font-size:13px;color:var(--ink-soft)}
+  .maint b{color:var(--ink)}
+  .made{display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:30px;padding-top:26px;
+    border-top:1px solid var(--line);text-decoration:none;color:inherit}
+  .made-by{font-family:var(--ui);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+  .made-logo{font-family:var(--display);font-weight:600;font-size:clamp(22px,6vw,27px);color:#00172D;letter-spacing:.2px;line-height:1}
+  .made-logo .amp-mark{font-family:var(--ui);font-weight:700;font-style:normal;color:var(--accent);padding:0 .04em}
+  .made-link{font-family:var(--ui);font-size:13px;font-weight:600;color:var(--accent);transition:color .2s ease}
+  .made:hover .made-link{color:var(--accent-2)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap topbar">
+    <button class="brand" onclick="go('home')" aria-label="Ir al índice">
+      <span class="dot"></span>
+      <span><b>Battle cards</b><span>Transparent Edge · playbook</span></span>
+    </button>
+    <div class="top-meta">jul 2026 · uso interno</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="block active" id="home">
+    <div class="hero">
+      <div class="amp" aria-hidden="true">&amp;</div>
+      <div class="kicker">sales playbook · 12 cartas</div>
+      <h1>Transparent Edge<br>frente a los grandes</h1>
+      <p>Doce cartas accionables para llevar a la llamada. Orden Klue: escenario, preparación, ejecución en vivo y resumen de bolsillo. Una sola voz, un solo argumentario.</p>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div id="index"></div>
+  </section>
+
+  <section class="block" id="blockview">
+    <div class="crumb"><button onclick="go('home')">← índice</button><span id="crumbc"></span></div>
+    <div class="bhead"><span class="sw" id="bsw"></span><h2 id="btitle"></h2><span class="bc" id="bcode"></span></div>
+    <div class="body" id="bbody"></div>
+    <div class="pager">
+      <button class="prev" id="prev"><span class="dir">← anterior</span><span class="tt" id="prevt"></span></button>
+      <button class="next" id="next"><span class="dir">siguiente →</span><span class="tt" id="nextt"></span></button>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  Construido en julio de 2026 sobre la ficha del nosotros y los fundamentos de cada rival del mapa de sector. Los rivales se apoyan en fichas ligeras; para máxima profundidad, completar la fase 1.
+  <a class="made" href="https://lauradecastro.substack.com/p/how-to-build-a-competitive-intelligence" target="_blank" rel="noopener">
+    <span class="made-by">Made by</span>
+    <span class="made-logo">Purpose <span class="amp-mark">&amp;</span> Prompt</span>
+    <span class="made-link">lauradecastro.substack.com</span>
+  </a>
+</footer>
+
+<script>
+"use strict";
+const C={te:"#e91e63",cf:"#f38020",ak:"#2ea3f2",fa:"#ff3b30",im:"#8b6cff",aws:"#ff9900",gc:"#34a853"};
+const ENT=[["Transparent Edge (nosotros)",C.te],["Cloudflare",C.cf],["Akamai",C.ak],["Fastly",C.fa],["Imperva",C.im],["AWS CloudFront",C.aws],["Google Cloud CDN",C.gc]];
+const RV=[["Cloudflare",C.cf],["Akamai",C.ak],["Fastly",C.fa],["Imperva",C.im],["AWS CloudFront",C.aws],["Google Cloud CDN",C.gc]];
+function rH(name,color){return `<div class="rival"><i style="background:${color}"></i>${name}</div>`;}
+
+const UI="#37A1FF";
+// ---------- content builders ----------
+const c2={
+ Cloudflare:{f:"Plataforma global de entrega y seguridad, con un plan gratis muy potente.",cu:"Aparece casi siempre: es la opción por defecto y la primera que el cliente prueba.",fo:["Arranque rápido y panel muy usable","Plan gratis y precios de entrada bajos","Red enorme (330+ centros) con buena latencia","Seguridad de serie (WAF, DDoS, bots)"],de:["Matriz estadounidense: dato bajo Cloud Act","Funciones avanzadas y SLA serios solo en Enterprise","Precios que suben (Business a 250 $/mes)","Sin ENS categoría alta ni soporte consultivo local"],ga:"Soberanía europea real y ENS alta frente a matriz estadounidense; trato directo frente al autoservicio.",ci:"Cloudflare es cómodo hasta que compliance pregunta dónde vive tu dato."},
+ Akamai:{f:"La CDN más veterana, hoy plataforma de entrega y seguridad de gran escala.",cu:"En cuentas grandes y cargas críticas (banca, media, retail de gran volumen).",fo:["Fiabilidad y disponibilidad de referencia","Escala de red difícil de igualar","WAF y anti-DDoS de primer nivel","Experiencia en sectores exigentes"],de:["Caro para quien no es gran cuenta","Configuración y puesta en marcha pesadas","Matriz estadounidense","Trato menos cercano para el cliente mediano"],ga:"La misma exigencia de fiabilidad, con trato cercano y sin la complejidad ni el coste de una gran cuenta.",ci:"Con Akamai pagas y montas como una multinacional aunque no lo seas."},
+ Fastly:{f:"CDN y plataforma de edge muy programable, orientada a desarrolladores.",cu:"Cuando decide un equipo técnico que valora control y rendimiento.",fo:["Programabilidad potente (Compute, VCL)","Purgado de caché casi instantáneo","Rendimiento alto","Buena reputación entre devs"],de:["Matriz estadounidense","Curva de aprendizaje en personalización","Seguridad menos 'referente' que Akamai o Imperva","Soporte y compliance UE menos naturales"],ga:"Programabilidad VCL equivalente, con soporte en español y el dato dentro del marco europeo.",ci:"Fastly te da control; nosotros te damos control y además dejamos el dato en Europa."},
+ Imperva:{f:"Proveedor de seguridad cuya CDN va integrada en su suite de protección.",cu:"Cuando el cliente entra por seguridad (WAF, protección de API) más que por entrega.",fo:["WAF y threat intelligence muy sólidos","Protección de API y bots madura","CDN integrada en la misma capa","Marca fuerte en seguridad"],de:["La CDN es accesoria, no el foco","Pricing enterprise","Atadura a la suite","Matriz estadounidense (grupo Thales)"],ga:"Seguridad edge integrada (WAF y anti-DDoS L3/4/7 siempre activo) sin atarla a su suite ni a su pricing enterprise.",ci:"Con Imperva la CDN es lo que viene en la caja; con nosotros es el producto."},
+ "AWS CloudFront":{f:"La CDN de AWS, pensada para integrarse con el resto del ecosistema.",cu:"Cuando el cliente ya está en AWS y busca el camino de menor fricción.",fo:["Integración nativa con AWS","Escala global de Amazon","Nueva tarifa plana sin sobrecostes","Sin egress desde orígenes AWS"],de:["Lock-in de AWS","Dato bajo el Cloud Act","Seguridad avanzada depende de piezas AWS","Menos trato consultivo"],ga:"Entrega sin lock-in de nube ni dato bajo el Cloud Act, y facturación por GB sin coste por petición.",ci:"CloudFront es cómodo mientras vivas dentro de AWS; fuera, el lock-in pesa."},
+ "Google Cloud CDN":{f:"La CDN de Google Cloud, sobre la red y las cachés de Google.",cu:"Cuando el cliente ya usa GCP.",fo:["Red de Google y buena latencia","Precio competitivo","Sencillez con una IP global","Integración con GCP"],de:["Seguridad avanzada aparte (Cloud Armor)","Lock-in de GCP","Config inicial compleja","Matriz estadounidense"],ga:"Seguridad avanzada integrada de serie, no aparte con Cloud Armor, y soberanía del dato europea.",ci:"Con Google, la seguridad la montas aparte; con nosotros ya viene puesta."}
+};
+function buildC2(){return RV.map(([n,c])=>{const d=c2[n];return rH(n,c)+
+  `<p class="kv"><b>En una frase.</b> ${d.f}</p><p class="kv"><b>Cuándo aparece.</b> ${d.cu}</p>`+
+  `<h4>Fortalezas reales</h4><ul>${d.fo.map(x=>`<li>${x}</li>`).join("")}</ul>`+
+  `<h4>Puntos débiles (donde se gana)</h4><ul>${d.de.map(x=>`<li>${x}</li>`).join("")}</ul>`+
+  `<p class="kv"><b>Cómo ganamos.</b> ${d.ga}</p><p class="kv"><span class="quote">“${d.ci}”</span></p>`;}).join("");}
+
+const c10={
+ Cloudflare:["¿Sabes bajo qué jurisdicción queda tu dato con un proveedor de matriz estadounidense?","¿Cuánto sube la factura cuando necesitas las funciones que están solo en Enterprise?","¿Quién te atiende cuando tienes una incidencia crítica en el plan que tienes?"],
+ Akamai:["¿El tiempo y el coste de puesta en marcha encajan con el tamaño de tu equipo?","¿Estás pagando por escala que de verdad usas?","¿Cómo de ágil es cambiar una regla cuando lo necesitas ya?"],
+ Fastly:["¿Qué pasa el día que la persona que mantiene tu lógica de edge no está?","¿Tu soporte y tu compliance hablan tu idioma y tu marco legal?","¿La seguridad avanzada es su fuerte o un añadido?"],
+ Imperva:["¿Usas su CDN por sí misma o solo porque viene con la seguridad?","¿Qué flexibilidad de precio tienes atado a su suite?","¿Bajo qué matriz y jurisdicción queda tu dato?"],
+ "AWS CloudFront":["¿Qué pasa con tu tráfico y tu coste el día que quieras salir de AWS?","¿Cuánto de tu factura es egress y cobro por unidad que no ves hasta fin de mes?","¿Tu seguridad avanzada depende de contratar más piezas de AWS?"],
+ "Google Cloud CDN":["¿Tu seguridad avanzada va incluida o la montas aparte con Cloud Armor?","¿Qué te ata a GCP si un día quieres mover la entrega?","¿Dónde queda tu dato en cuanto a soberanía europea?"]
+};
+function buildC10(){return `<p class="lead">Preguntas que dejan expuesto al rival. No se afirma, se pregunta. Que el cliente se las acabe haciendo solo.</p>`+
+  RV.map(([n,c])=>rH(n,c)+`<ul>${c10[n].map(q=>`<li><span class="quote">“${q}”</span></li>`).join("")}</ul>`).join("");}
+
+const c12={
+ Cloudflare:{r:["Soberanía europea y ENS alta frente a matriz estadounidense","Seguridad integrada sin saltar a Enterprise","Trato directo frente al autoservicio"],d:"'Sois pequeños' → 16 personas con ENS alta, ISO 27001 y 70+ PoPs.",t:"¿Bajo qué jurisdicción queda tu dato y cuánto sube al necesitar Enterprise?",p:"Cloudflare es cómodo hasta que compliance pregunta dónde vive tu dato."},
+ Akamai:{r:["Misma fiabilidad sin complejidad de gran cuenta","Trato cercano y coste previsible","Puesta en marcha ágil"],d:"'Menos escala' → escala de red de sobra para tu caso real; la plantilla no es la red.",t:"¿El coste y el tiempo de montaje encajan con tu equipo?",p:"Con Akamai montas y pagas como multinacional aunque no lo seas."},
+ Fastly:{r:["VCL equivalente en control","Soporte en español","Dato en marco europeo"],d:"'Menos devs famosos' → mismo control técnico, con soporte y compliance local.",t:"¿Qué pasa si quien mantiene tu edge se va?",p:"Fastly te da control; nosotros, control y dato en Europa."},
+ Imperva:{r:["La CDN es el producto, no un accesorio","Seguridad edge integrada igual","Sin atadura a suite enterprise"],d:"'Menos marca en seguridad' → WAF y anti-DDoS L3/4/7 siempre activo, con ENS alta.",t:"¿Usas su CDN por sí misma o solo porque viene con la seguridad?",p:"Con Imperva la CDN viene en la caja; con nosotros es el producto."},
+ "AWS CloudFront":{r:["Sin lock-in de nube","Dato fuera del Cloud Act","Sin coste por petición"],d:"'Menos ecosistema' → no necesitas su nube para tener entrega y seguridad serias.",t:"¿Qué pasa con tu tráfico y tu coste el día que salgas de AWS?",p:"CloudFront es cómodo dentro de AWS; fuera, el lock-in pesa."},
+ "Google Cloud CDN":{r:["Seguridad integrada, no aparte","Sin lock-in de GCP","Soberanía del dato europea"],d:"'Precio más agresivo' → compara el TCO con seguridad incluida y sin egress.",t:"¿Tu seguridad va incluida o la montas aparte con Cloud Armor?",p:"Con Google la seguridad la montas aparte; con nosotros ya viene puesta."}
+};
+function buildC12(){return `<p class="lead">El resumen de bolsillo. Lo que te llevas si solo lees una carta. Destilado de las 11 anteriores.</p>`+
+  RV.map(([n,c])=>{const d=c12[n];return rH(n,c)+
+   `<p class="kv"><b>Por qué ganamos:</b> ${d.r.join("; ")}.</p>`+
+   `<p class="kv"><b>Quick dismiss:</b> ${d.d}</p>`+
+   `<p class="kv"><b>Pregunta trampa:</b> <span class="quote">“${d.t}”</span></p>`+
+   `<p class="kv"><b>Posicionamiento:</b> <span class="quote">“${d.p}”</span></p>`;}).join("");}
+
+// ---------- blocks ----------
+const HEADER=`
+<p class="lead">Nuestra propuesta: rendimiento de gran CDN con soberanía europea, seguridad edge integrada y trato directo. Única CDN de matriz española, ENS categoría alta e ISO 27001.</p>
+<h4>La propuesta de cada rival, en una línea</h4>
+<div class="tw"><table><thead><tr><th>Rival</th><th>Su propuesta</th></tr></thead><tbody>
+<tr><th>Cloudflare</th><td>Todo en uno, fácil de arrancar, seguridad de serie. La opción por defecto.</td></tr>
+<tr><th>Akamai</th><td>Fiabilidad y escala para cargas críticas. El proveedor de la gran cuenta.</td></tr>
+<tr><th>Fastly</th><td>Control y velocidad para equipos técnicos. La CDN del desarrollador.</td></tr>
+<tr><th>Imperva</th><td>Seguridad primero; la CDN viene incluida en su suite de protección.</td></tr>
+<tr><th>AWS CloudFront</th><td>La entrega que ya vive dentro de tu nube AWS.</td></tr>
+<tr><th>Google Cloud CDN</th><td>Entrega sobre la red de Google, sencilla dentro de GCP.</td></tr>
+</tbody></table></div>
+<h4>Tres flancos explotables por rival</h4>
+<div class="tw"><table><thead><tr><th>Rival</th><th>Flancos</th></tr></thead><tbody>
+<tr><th>Cloudflare</th><td>Matriz estadounidense (Cloud Act); funciones avanzadas capadas a Enterprise y precios que suben; configuración fina de WAF y bots trabajosa.</td></tr>
+<tr><th>Akamai</th><td>Caro y pesado para quien no es gran cuenta; capa de configuración compleja; matriz estadounidense.</td></tr>
+<tr><th>Fastly</th><td>Matriz estadounidense; curva de aprendizaje; soporte y compliance europeo menos naturales.</td></tr>
+<tr><th>Imperva</th><td>La CDN es accesoria; pricing enterprise; atadura a la suite; matriz estadounidense (grupo Thales).</td></tr>
+<tr><th>AWS CloudFront</th><td>Lock-in de AWS; dato bajo Cloud Act; la seguridad avanzada depende de otras piezas de AWS.</td></tr>
+<tr><th>Google Cloud CDN</th><td>Seguridad avanzada aparte (Cloud Armor); lock-in de GCP; config inicial compleja; matriz estadounidense.</td></tr>
+</tbody></table></div>
+<h4>Donde somos más débiles (mirarlo de frente)</h4>
+<ul>
+<li>Escala: estructura pequeña (del orden de 16 personas), lejos de Akamai o Amazon.</li>
+<li>Catálogo y ecosistema más acotados: sin marketplace ni profundidad de servicios cloud de un hiperescalar.</li>
+<li>Marca global y reviews públicas bajas: menos reconocimiento fuera de España.</li>
+</ul>
+<p class="fine">Estos tres puntos alimentan la carta 11 (counter FUD) y el quick dismiss de la carta 12.</p>`;
+
+const C1=`<p class="lead">Cómo vende cada rival, para anticipar sus movimientos. FIA ligero (fact + impact).</p>
+<p class="scrollhint">Desliza la tabla en horizontal en móvil →</p>
+<div class="tw"><table><thead><tr><th>Rival</th><th>Cómo vende y palancas</th><th>Dónde no juega</th><th>Qué significa para nosotros</th></tr></thead><tbody>
+<tr><th>Cloudflare</th><td>Autoservicio y freemium. Engancha con el gratis y el arranque en minutos, luego empuja a Pro/Business/Enterprise.</td><td>Soberanía europea, venta consultiva, concursos con ENS.</td><td>No competir en 'gratis'. Llevar la charla a cumplimiento y dato europeo.</td></tr>
+<tr><th>Akamai</th><td>Venta directa enterprise, contratos a medida, PoC. Palanca: fiabilidad y escala.</td><td>Pymes y medianas; precio de entrada.</td><td>Entrar donde Akamai es caro y pesado, con trato cercano.</td></tr>
+<tr><th>Fastly</th><td>Venta a equipos técnicos, pago por uso, prueba. Palanca: programabilidad y rendimiento.</td><td>Cliente no técnico; soporte en español; compliance UE.</td><td>Empatar en VCL y sumar soberanía y soporte local.</td></tr>
+<tr><th>Imperva</th><td>Venta directa security-first sobre su suite WAAP. Palanca: threat intel y WAF.</td><td>Cliente que quiere la CDN como producto principal.</td><td>Ofrecer seguridad edge sin atar a suite ni a pricing enterprise.</td></tr>
+<tr><th>AWS CloudFront</th><td>Autoservicio en AWS, ahora tarifa plana. Palanca: integración y sin egress desde orígenes AWS.</td><td>Cliente multinube o que huye del lock-in y del Cloud Act.</td><td>Atacar el lock-in y la soberanía del dato.</td></tr>
+<tr><th>Google Cloud CDN</th><td>Autoservicio en GCP, pago por uso y créditos. Palanca: red de Google y precio.</td><td>Seguridad integrada (va aparte); cliente fuera de GCP.</td><td>Seguridad de serie y dato europeo como diferencia.</td></tr>
+</tbody></table></div>`;
+
+const C3=`<p class="lead">Preguntas al cliente para descubrir contra quién compites y sacar sus flancos. No aplica FIA.</p>
+<h4>Descubrimiento (sin nombrar rival)</h4><ul>
+<li>¿Dónde se procesan y almacenan hoy los datos de tus usuarios? <span class="fine">(sensibilidad a soberanía y Cloud Act)</span></li>
+<li>¿Tenéis requisitos de ENS, RGPD o residencia del dato? <span class="fine">(si pesa el sector público o regulado)</span></li>
+<li>¿Cómo de predecible es tu factura de CDN a fin de mes? <span class="fine">(dolor de pago por uso o coste por petición)</span></li>
+<li>Cuando hay incidencia, ¿con quién habláis y en qué idioma? <span class="fine">(dolor de soporte lejano)</span></li>
+<li>¿CDN y seguridad web son el mismo proveedor o van por separado? <span class="fine">(integración y complejidad)</span></li>
+</ul>
+<h4>Orientadas por rival</h4><ul>
+<li>Cloudflare/hiperescalares: ¿qué plan tenéis y qué funciones os quedaron fuera hasta Enterprise? <span class="fine">(funciones capadas y saltos de precio)</span></li>
+<li>Akamai: ¿el coste y el tiempo de puesta en marcha encajan con tu equipo? <span class="fine">(complejidad y sobrecoste)</span></li>
+<li>Fastly: ¿quién mantiene la lógica del edge y qué pasa si se va? <span class="fine">(dependencia técnica)</span></li>
+<li>Imperva: ¿usáis su CDN por sí misma o por venir con la seguridad? <span class="fine">(la CDN es accesoria)</span></li>
+<li>AWS/Google: ¿qué pasa con tu tráfico y tu dato el día que quieras salir? <span class="fine">(lock-in)</span></li>
+</ul>`;
+
+const C4=`<p class="lead">Visión del porfolio del rival y cómo lo posiciona. Se vende sobre valor, no sobre funciones. FIA ligero.</p>
+<p class="scrollhint">Desliza la tabla en horizontal en móvil →</p>
+<div class="tw"><table><thead><tr><th>Rival</th><th>Porfolio en llano</th><th>Fortaleza</th><th>Debilidad / dónde no encaja</th></tr></thead><tbody>
+<tr><th>Cloudflare</th><td>CDN, WAF, DDoS, bots, DNS, Zero Trust, Workers.</td><td>Amplitud y facilidad, todo en un panel.</td><td>Lo serio sube a Enterprise; sin soberanía UE.</td></tr>
+<tr><th>Akamai</th><td>CDN, WAF, anti-DDoS, bots, API security, cloud.</td><td>Escala y fiabilidad para lo crítico.</td><td>Sobredimensionado y caro para medianas.</td></tr>
+<tr><th>Fastly</th><td>CDN, Compute, WAF, DDoS, imagen, streaming.</td><td>Programabilidad y rendimiento.</td><td>Requiere músculo técnico; seguridad no es su bandera.</td></tr>
+<tr><th>Imperva</th><td>WAF, API, anti-DDoS, bots, CDN integrada (WAAP).</td><td>Seguridad de referencia.</td><td>La CDN es medio, no fin; atada a la suite.</td></tr>
+<tr><th>AWS CloudFront</th><td>CDN + AWS WAF/Shield, Route 53, Lambda@Edge, S3.</td><td>Integración total con AWS.</td><td>Todo el valor asume que vives en AWS.</td></tr>
+<tr><th>Google Cloud CDN</th><td>Cloud CDN, Media CDN, balanceo, Cloud Armor.</td><td>Red de Google y precio.</td><td>Seguridad avanzada por separado; atado a GCP.</td></tr>
+</tbody></table></div>
+<h4>Nuestro contrapunto de posicionamiento</h4>
+<p>No jugamos a tener más casillas de funciones. Jugamos a que el dato se queda en Europa, la seguridad viene integrada y detrás hay un equipo que responde. Frente a un porfolio enorme del que usas el 20 %, ofrecemos lo que mueve el deal: rendimiento, cumplimiento y cercanía.</p>`;
+
+const C5=`<p class="lead">Ajustar el mensaje a quién tienes delante. Personas derivadas del ICP. FIA ligero.</p>
+${["CISO / responsable de seguridad|Cumplimiento, superficie de ataque y control del dato.|Seguridad edge integrada, ENS categoría alta e ISO 27001, dato en Europa.|Frente a hiperescalares: tu seguridad no depende de módulos aparte ni de una nube ajena.",
+"CTO / arquitecto|Rendimiento, control técnico y evitar el lock-in.|VCL programable, purgado rápido, sin atarte a una nube.|Frente a Fastly: mismo control, con el dato en marco europeo. Frente a AWS/Google: sin lock-in.",
+"Responsable de infraestructura / sistemas|Disponibilidad, soporte y previsibilidad operativa.|Anti-DDoS siempre activo, logs en tiempo real, soporte cercano en español.|Frente a Akamai: la misma fiabilidad sin la complejidad de gran cuenta.",
+"Compras / procurement|Coste previsible y encaje en concursos.|Pago por uso sin coste por petición; ENS alta habilita compra pública.|Frente a todos: previsibilidad y un proveedor europeo que cumple los pliegos."].map(s=>{const[a,b,c,d]=s.split("|");return `<div class="rival"><i style="background:${C.te}"></i>${a}</div><p class="kv"><b>Qué le importa.</b> ${b}</p><p class="kv"><b>Mensaje central.</b> ${c}</p><p class="kv"><b>Gancho frente a rivales.</b> ${d}</p>`;}).join("")}`;
+
+const C6=`<p class="lead">Adaptar a sectores que compran por motivos distintos. FIA ligero.</p>
+<p class="scrollhint">Desliza la tabla en horizontal en móvil →</p>
+<div class="tw"><table><thead><tr><th>Vertical</th><th>Qué le duele</th><th>Mensaje central</th><th>Gancho frente a rivales</th></tr></thead><tbody>
+<tr><th>Banca y finanzas</th><td>Residencia del dato, resiliencia y cumplimiento.</td><td>Soberanía europea, anti-DDoS siempre activo, ISO 27001.</td><td>Frente a matriz estadounidense: el dato no sale del marco europeo.</td></tr>
+<tr><th>Sector público</th><td>Pliegos, ENS y proveedor europeo.</td><td>ENS categoría alta y matriz española.</td><td>Solo pesa aquí: sin ENS alta, muchos concursos ni se miran.</td></tr>
+<tr><th>Medios y streaming</th><td>Picos de tráfico, vídeo y latencia.</td><td>Edge Transcoding, PoP en España, mitigación de picos.</td><td>Frente a Akamai: rendimiento con trato cercano y coste previsible.</td></tr>
+<tr><th>E-commerce</th><td>Velocidad, bots y coste.</td><td>Image Optimizer i3, bot management, sin coste por petición.</td><td>Frente a Cloudflare: seguridad de bots sin saltar a Enterprise.</td></tr>
+<tr><th>E-learning / hosting</th><td>Escalado y soporte.</td><td>Escalado elástico, soporte cercano, CDN dedicada o licenciada.</td><td>Frente a hiperescalares: soporte que responde y sin lock-in.</td></tr>
+</tbody></table></div>
+<p class="fine">El argumento de ENS categoría alta solo es decisivo en sector público y regulado. No lo gastes donde no pesa.</p>`;
+
+const C7=`<p class="lead">Para cuando entra compras. No ser el más barato, ser el más previsible. FIA ligero.</p>
+<h4>Precios de referencia (a validar; sin cifras enterprise exactas)</h4>
+<div class="tw"><table><thead><tr><th>Actor</th><th>Modelo</th><th>Entrada</th><th>Gama alta</th></tr></thead><tbody>
+<tr><th class="te-row">Transparent Edge</th><td>Pago por uso, por GB, sin mínimos</td><td>No publicado (a validar)</td><td>A medida (a validar)</td></tr>
+<tr><th>Cloudflare</th><td>Planes fijos + Enterprise</td><td>Gratis / 20 $/mes</td><td>Business 250 $/mes; Enterprise a medida</td></tr>
+<tr><th>Akamai</th><td>Contrato a medida</td><td>No público</td><td>A medida, reputación de alto</td></tr>
+<tr><th>Fastly</th><td>Pago por uso</td><td>Mín. 50 $/mes</td><td>A medida por volumen</td></tr>
+<tr><th>Imperva</th><td>A medida / PAYG</td><td>Heredado 59 $/mes</td><td>Enterprise a medida</td></tr>
+<tr><th>AWS CloudFront</th><td>Tarifa plana o pago por uso</td><td>Gratis / 15 $/mes</td><td>Premium 1.000 $/mes + uso</td></tr>
+<tr><th>Google Cloud CDN</th><td>Pago por uso</td><td>Por uso + crédito 300 $</td><td>Descuentos sobre 500 TiB/mes</td></tr>
+</tbody></table></div>
+<h4>Mecánica del coste oculto</h4><ul>
+<li>Cloudflare: SLA y bots avanzados empujan a Enterprise. El precio de lista no es el final.</li>
+<li>Hiperescalares: el egress y el cobro por petición o lookup multiplican en tráfico real. Mira los topes de la tarifa plana.</li>
+<li>Akamai/Imperva: la puesta en marcha y la atadura a suite pesan tanto como la cuota.</li>
+</ul>
+<h4>Cómo plantear el TCO</h4>
+<p>Escenario tipo con el tráfico real del cliente y suma todo: entrega, seguridad, egress, soporte e integrar piezas sueltas. Nuestra ventaja no es el céntimo por GB: es que no hay coste por petición, no hay lock-in y la seguridad ya viene dentro.</p>
+<p class="fine">Aviso: las unidades de cobro no siempre son comparables. Apóyate en la mecánica, no en una cifra que no puedas sostener.</p>`;
+
+const C8=`<p class="lead">Para demos y comités técnicos. Insumo comparativo, no FIA. La columna 'quién gana' es honesta.</p>
+<p class="scrollhint">Leyenda: TE Transparent Edge · CF Cloudflare · AK Akamai · Fa Fastly · Im Imperva · AWS CloudFront · GC Google. Desliza en horizontal →</p>
+<div class="tw"><table class="h2h"><thead><tr><th>Capacidad</th><th>TE</th><th>CF</th><th>AK</th><th>Fa</th><th>Im</th><th>AWS</th><th>GC</th><th>Quién gana</th></tr></thead><tbody>
+<tr><th>Entrega de baja latencia</th><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td class="win">Empate</td></tr>
+<tr><th>WAF integrado</th><td>Sí</td><td>Sí</td><td>Sí</td><td>Sí</td><td>Núcleo</td><td>Sí</td><td>Aparte</td><td class="win">Imperva / Akamai</td></tr>
+<tr><th>Anti-DDoS L3/4/7 always-on</th><td>Sí</td><td>Sí</td><td>Sí</td><td>Parc.</td><td>Sí</td><td>Sí</td><td>Parc.</td><td class="win">Akamai</td></tr>
+<tr><th>Programabilidad edge</th><td>VCL</td><td>Workers</td><td>Sí</td><td>Fuerte</td><td>Ltd</td><td>L@Edge</td><td>Ltd</td><td class="win">Fastly / Cloudflare</td></tr>
+<tr><th>Soberanía del dato UE</th><td>Sí</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td class="win">Transparent Edge</td></tr>
+<tr><th>ENS categoría alta</th><td>Sí</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td>No</td><td class="win">Transparent Edge</td></tr>
+<tr><th>Escala de red global</th><td>Media</td><td>Alta</td><td>Máx.</td><td>Alta</td><td>Alta</td><td>Alta</td><td>Alta</td><td class="win">Akamai / hiperescalares</td></tr>
+<tr><th>Ecosistema e integración nube</th><td>Ltd</td><td>Media</td><td>Media</td><td>Media</td><td>Media</td><td>Máx.</td><td>Máx.</td><td class="win">AWS / Google</td></tr>
+<tr><th>Soporte local en español</th><td>Sí</td><td>Ltd</td><td>Ltd</td><td>Ltd</td><td>Ltd</td><td>Ltd</td><td>Ltd</td><td class="win">Transparent Edge</td></tr>
+<tr><th>Precio de entrada público</th><td>No</td><td>Sí</td><td>No</td><td>Sí</td><td>Parc.</td><td>Sí</td><td>Sí</td><td class="win">Cloudflare / AWS</td></tr>
+<tr><th>Imagen y transcoding edge</th><td>Sí</td><td>Parc.</td><td>Sí</td><td>Sí</td><td>Ltd</td><td>Parc.</td><td>Parc.</td><td class="win">Empate</td></tr>
+<tr><th>Reconocimiento de marca global</th><td>Bajo</td><td>Alto</td><td>Alto</td><td>Alto</td><td>Alto</td><td>Alto</td><td>Alto</td><td class="win">Los grandes</td></tr>
+</tbody></table></div>
+<p class="fine">Hay filas donde gana el rival, a propósito: escala, ecosistema, precio de entrada y marca. Fingir lo contrario resta credibilidad.</p>`;
+
+const C9=`<p class="lead">Para la conversación en vivo, cuando el cliente ya mira al rival. FIA completo.</p>
+<div class="tw"><table><thead><tr><th>Dice el cliente</th><th>Respondes</th></tr></thead><tbody>
+<tr><th>“Cloudflare es más barato y arranca en cinco minutos.”</th><td>Para empezar, sí. Pero lo que de verdad necesitas (SLA, bots, soporte) sube a Enterprise, y tu dato sigue bajo Cloud Act. Nosotros lo integramos y lo dejamos en Europa.</td></tr>
+<tr><th>“Akamai es el estándar para algo crítico.”</th><td>Y es muy bueno en escala. ¿Necesitas montarte y pagar como una multinacional? Damos la misma fiabilidad con trato cercano y sin esa complejidad.</td></tr>
+<tr><th>“Fastly me da un control del edge que me encanta.”</th><td>Nosotros también, con VCL. Sumamos soporte en español y el dato dentro del marco europeo, sin depender de una sola persona que sepa la lógica.</td></tr>
+<tr><th>“Imperva me cubre seguridad y CDN de una vez.”</th><td>Cierto, pero ahí la CDN es accesoria de su suite, con pricing enterprise. Con nosotros la entrega es el producto y la seguridad viene integrada igual.</td></tr>
+<tr><th>“Ya estoy en AWS, CloudFront es lo natural.”</th><td>Lo es mientras vivas en AWS. El día que quieras mover tráfico o dato, el lock-in pesa. Te damos entrega sin atarte a una nube y sin Cloud Act.</td></tr>
+<tr><th>“Google me sale muy a cuenta.”</th><td>En entrega puede. Pero la seguridad la montas aparte con Cloud Armor, y el dato queda bajo matriz estadounidense. Nosotros la integramos y respetamos la soberanía.</td></tr>
+<tr><th>“Sois pequeños, me da respeto.”</th><td>Somos 16 personas con ENS categoría alta, ISO 27001, 70+ PoPs y clientes en banca, medios y administración. Pequeños en plantilla, serios en lo que importa.</td></tr>
+</tbody></table></div>`;
+
+const C11=`<p class="lead">Desactivar el miedo, la incertidumbre y la duda que el rival siembra sobre nosotros. FIA completo.</p>
+<p class="scrollhint">Desliza la tabla en horizontal en móvil →</p>
+<div class="tw"><table><thead><tr><th>FUD que siembra el rival</th><th>Por qué lo dice</th><th>Cómo lo desactivamos (con prueba)</th></tr></thead><tbody>
+<tr><th>“Son 16 personas, no aguantarán.”</th><td>Atacan nuestra escala.</td><td>70+ PoPs en ~40 países, tres en España, y clientes en banca, medios y administración. La plantilla no es la capacidad de red.</td></tr>
+<tr><th>“Empresa pequeña, hay riesgo.”</th><td>Miedo a la continuidad.</td><td>Linaje de +15 años (empresas desde 2008), ISO 27001 desde hace más de una década y ENS categoría alta.</td></tr>
+<tr><th>“Catálogo limitado.”</th><td>Comparan con su porfolio.</td><td>Entrega, seguridad edge (WAF, anti-DDoS, bots), imagen y transcoding, y VCL. Lo que se usa en un deal real está.</td></tr>
+<tr><th>“No los conoce nadie fuera de España.”</th><td>Usan su marca global.</td><td>Ventaja para quien quiere soberanía: hub español de Gaia-X. Para el dato europeo, la matriz importa más que el logo.</td></tr>
+<tr><th>“No publican precios, algo esconden.”</th><td>Duda sobre transparencia.</td><td>Modelo claro: pago por uso, por GB, sin mínimos ni coste por petición. El detalle se cierra en propuesta, como en toda venta enterprise.</td></tr>
+</tbody></table></div>`;
+
+const WINLOSS=`<p class="lead">Pendiente de datos internos.</p>
+<p>Estas cartas exigen análisis de win-loss real (entrevistas a clientes ganados y perdidos, temas del CRM). No se fabrican desde investigación pública, porque saldrían datos inventados con apariencia de verdad. Se generan cuando el cliente aporte esos datos:</p>
+<ul><li>Win-loss battlecard</li><li>Why we win and why we lose</li><li>When to engage / not engage (con tasa de victoria real)</li><li>Preemptive advantage</li></ul>`;
+
+// ---------- registry ----------
+const BLOCKS=[
+ {id:"header",g:"Fundamentos",code:"00",tag:"cimiento",title:"Cabecera común",color:UI,one:"Propuesta propia y de cada rival, flancos y nuestras debilidades.",html:HEADER},
+ {id:"c1",g:"Bloque A · escenario",code:"01",tag:"approach",title:"Approach to market",color:UI,one:"Cómo vende cada rival, para anticiparte.",html:C1},
+ {id:"c2",g:"Bloque A · escenario",code:"02",tag:"overview",title:"Por competidor",color:UI,one:"Ficha por rival: fortalezas, debilidades y cómo ganamos.",html:buildC2},
+ {id:"c3",g:"Bloque B · preparación",code:"03",tag:"discovery",title:"Questions to ask",color:UI,one:"Preguntas al cliente para sacar los flancos del rival.",html:C3},
+ {id:"c4",g:"Bloque B · preparación",code:"04",tag:"producto",title:"Product overview",color:UI,one:"Porfolio del rival sin jerga, con nuestro contrapunto.",html:C4},
+ {id:"c5",g:"Bloque B · preparación",code:"05",tag:"persona",title:"Por persona",color:UI,one:"Mensaje ajustado a CISO, CTO, sistemas y compras.",html:C5},
+ {id:"c6",g:"Bloque B · preparación",code:"06",tag:"vertical",title:"Por vertical",color:UI,one:"Banca, público, medios, e-commerce, e-learning.",html:C6},
+ {id:"c7",g:"Bloque B · preparación",code:"07",tag:"pricing",title:"Pricing y TCO",color:UI,one:"Precios de referencia, coste oculto y cómo plantear el TCO.",html:C7},
+ {id:"c8",g:"Bloque B · preparación",code:"08",tag:"matriz",title:"Head to head",color:UI,one:"Matriz de 12 capacidades con quién gana honesto.",html:C8},
+ {id:"c9",g:"Bloque C · ejecución",code:"09",tag:"defensa",title:"Objeciones y respuestas",color:UI,one:"Lo que dice el cliente y cómo lo reencuadras.",html:C9},
+ {id:"c10",g:"Bloque C · ejecución",code:"10",tag:"ataque",title:"Trampas (landmines)",color:UI,one:"Preguntas que dejan expuesto al rival.",html:buildC10},
+ {id:"c11",g:"Bloque C · ejecución",code:"11",tag:"defensa",title:"Counter FUD",color:UI,one:"Desactivar el miedo que siembran sobre nosotros.",html:C11},
+ {id:"c12",g:"Bloque D · cierre",code:"12",tag:"resumen",title:"Key points / quick dismiss",color:UI,one:"El resumen de bolsillo por rival.",html:buildC12},
+ {id:"winloss",g:"Bloque D · cierre",code:"3-bis",tag:"pendiente",title:"Win-loss (pendiente)",color:"#9B9B9B",one:"Cartas que necesitan datos internos reales.",html:WINLOSS}
+];
+const byId=id=>BLOCKS.find(b=>b.id===id);
+
+// ---------- render index ----------
+(function(){
+  document.getElementById("legend").innerHTML=ENT.map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join("");
+  const groups=[...new Set(BLOCKS.map(b=>b.g))];
+  document.getElementById("index").innerHTML=groups.map(g=>{
+    const items=BLOCKS.filter(b=>b.g===g).map(b=>`
+      <button class="card" style="--dot:${b.color}" onclick="go('${b.id}')" aria-label="Abrir ${b.title}">
+        <div class="row1"><span class="code">${b.code}</span><span class="tag">${b.tag}</span></div>
+        <h3>${b.title}</h3><p class="desc">${b.one}</p>
+      </button>`).join("");
+    return `<div class="group"><div class="group-head"><h2>${g}</h2><div class="rule"></div></div><div class="cards">${items}</div></div>`;
+  }).join("");
+})();
+
+// ---------- routing ----------
+function go(id){ if(location.hash.slice(1)!==id) location.hash = id==="home"?"":id; route(); }
+function render(b){
+  document.getElementById("bsw").style.background=b.color;
+  document.getElementById("btitle").textContent=b.title;
+  document.getElementById("bcode").textContent="CARTA "+b.code;
+  document.getElementById("crumbc").textContent="CARTA "+b.code;
+  document.getElementById("bbody").innerHTML= typeof b.html==="function"?b.html():b.html;
+  const i=BLOCKS.indexOf(b), pv=BLOCKS[i-1], nx=BLOCKS[i+1];
+  const pb=document.getElementById("prev"), nb=document.getElementById("next");
+  if(pv){pb.disabled=false;pb.onclick=()=>go(pv.id);document.getElementById("prevt").textContent=pv.title;}else{pb.disabled=true;document.getElementById("prevt").textContent="";}
+  if(nx){nb.disabled=false;nb.onclick=()=>go(nx.id);document.getElementById("nextt").textContent=nx.title;}else{nb.disabled=true;document.getElementById("nextt").textContent="";}
+}
+function route(){
+  const id=location.hash.slice(1);
+  const home=document.getElementById("home"), bv=document.getElementById("blockview");
+  if(!id||id==="home"){home.classList.add("active");bv.classList.remove("active");window.scrollTo({top:0});return;}
+  const b=byId(id);
+  if(!b){home.classList.add("active");bv.classList.remove("active");return;}
+  home.classList.remove("active");bv.classList.add("active");render(b);window.scrollTo({top:0});
+}
+window.addEventListener("hashchange",route);
+route();
+document.addEventListener("keydown",e=>{
+  if(!document.getElementById("blockview").classList.contains("active"))return;
+  if(e.key==="ArrowRight"){const b=document.getElementById("next");if(!b.disabled)b.onclick();}
+  if(e.key==="ArrowLeft"){const b=document.getElementById("prev");if(!b.disabled)b.onclick();}
+  if(e.key==="Escape")go("home");
+});
+</script>
+</body>
+</html>
