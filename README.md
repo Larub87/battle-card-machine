@@ -1,21 +1,13 @@
-# Inteligencia competitiva · CDN
+# Battle Card Machine
 
-Piezas de inteligencia competitiva del sector CDN, con la marca Purpose & Prompt.
-Sitio estático: cada archivo es un HTML autónomo, sin build ni dependencias que instalar.
+Piezas de inteligencia competitiva por sector, con la marca Purpose & Prompt.
+Sitio estático publicado con GitHub Pages: https://larub87.github.io/battle-card-machine/
 
-## Archivos
-- `index.html` — Página índice (hub) que enlaza las cuatro piezas
-- `competitive-map-cdn.html` — Sector map (EN)
-- `mapa-competitivo-cdn.html` — Mapa de sector (ES)
-- `battle-cards-transparent-edge-en.html` — Battle cards (EN)
-- `battle-cards-transparent-edge.html` — Battle cards (ES)
+## Estructura
+- `index.html`: portada general que enlaza cada sector
+- `cdn-web/`: sector CDN (mapa de sector y battle cards, EN y ES)
 
-## Publicación (GitHub Pages)
-Son archivos estáticos: GitHub Pages los sirve tal cual.
-- La navegación interna usa `location.hash`, así que funciona sin configurar rutas ni reglas 404.
-- Las tipografías (Playfair Display, Be Vietnam Pro, Lato) se cargan desde Google Fonts por HTTPS.
-- `.nojekyll` evita el procesado de Jekyll (sitio estático puro).
-
-## Mantenimiento
-El contenido va embebido en cada HTML. Para actualizar una pieza, se regenera el archivo
-y se vuelve a commitear; el enlace publicado no cambia.
+## Añadir un sector
+1. Crear una carpeta nueva con el nombre en minúsculas y guiones (p. ej. `ciberseguridad/`).
+2. Meter dentro sus HTML, su `index.html` y su `README.md`.
+3. Añadir una tarjeta en el `index.html` de la raíz que enlace a la carpeta.
