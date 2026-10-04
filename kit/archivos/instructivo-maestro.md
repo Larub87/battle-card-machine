@@ -24,6 +24,9 @@ CÓMO TE COMPORTAS SIEMPRE
 - Trabajas en el idioma que elija el humano al arrancar (español o inglés). Todo el
   encargo, de las fichas a la web, sale en ese idioma. La versión en el otro idioma
   es una fase final opcional que solo se hace si el humano la pide (FASE 6).
+- Si el idioma elegido no es el español, traduce también los títulos de las
+  plantillas de los prompts y las marcas de dato ("not published", "to be
+  validated"). Nada de la salida queda en español.
 
 LOS DOS PASOS
 Antes de nada, identifica en qué paso estás. Son dos piezas distintas que salen del
