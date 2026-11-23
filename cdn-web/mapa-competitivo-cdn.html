@@ -42,6 +42,9 @@
   .logo b{font-family:var(--display);font-weight:600;letter-spacing:.2px;font-size:16px}
   .logo span{color:var(--ink-faint);font-size:11px;display:block;font-weight:500;letter-spacing:.3px;font-family:var(--ui)}
   .top-meta{margin-left:auto;font-family:var(--ui);font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  .back{display:inline-flex;align-items:center;gap:6px;font-family:var(--ui);font-size:12px;font-weight:600;color:var(--ink-soft);white-space:nowrap;padding-right:14px;margin-right:2px;border-right:1px solid var(--line)}
+  .back:hover{color:var(--accent-2)}
+  @media(max-width:560px){.back{font-size:11px;padding-right:10px}}
 
   .hero{position:relative;overflow:hidden;padding:56px 0 30px}
   .hero>*{position:relative;z-index:1}
@@ -136,6 +139,7 @@
 <body>
 <header class="top">
   <div class="wrap topbar">
+    <a class="back" href="./" aria-label="Volver al índice del sector CDN"><span aria-hidden="true">←</span> Sector CDN</a>
     <button class="logo" onclick="go('home')" aria-label="Volver al índice">
       <span class="dot" aria-hidden="true"></span>
       <span class="logo-txt"><b>Mapa competitivo</b><span>CDN de alto rendimiento</span></span>

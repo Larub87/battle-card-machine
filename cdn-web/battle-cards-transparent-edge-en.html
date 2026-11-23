@@ -44,6 +44,9 @@
   .brand b{font-family:var(--display);font-weight:600;letter-spacing:.2px;font-size:16px}
   .brand span{display:block;font-size:11px;color:var(--ink-faint);font-weight:500;font-family:var(--ui)}
   .top-meta{margin-left:auto;font-family:var(--ui);font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  .back{display:inline-flex;align-items:center;gap:6px;font-family:var(--ui);font-size:12px;font-weight:600;color:var(--ink-soft);white-space:nowrap;padding-right:14px;margin-right:2px;border-right:1px solid var(--line)}
+  .back:hover{color:var(--accent-2)}
+  @media(max-width:560px){.back{font-size:11px;padding-right:10px}}
 
   .hero{position:relative;overflow:hidden;padding:52px 0 26px}
   .hero>*{position:relative;z-index:1}
@@ -143,6 +146,7 @@
 <body>
 <header class="top">
   <div class="wrap topbar">
+    <a class="back" href="./" aria-label="Back to the CDN sector index"><span aria-hidden="true">←</span> CDN sector</a>
     <button class="brand" onclick="go('home')" aria-label="Go to index">
       <span class="dot"></span>
       <span><b>Battle cards</b><span>Transparent Edge · playbook</span></span>
